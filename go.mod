@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-git/go-git/v5 v5.11.0
-	github.com/linuxsuren/api-testing v0.0.15
+	github.com/linuxsuren/api-testing v0.0.17-0.20240412045319-77526e2170f1
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
 )
