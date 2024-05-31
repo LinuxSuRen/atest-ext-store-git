@@ -3,3 +3,5 @@
 
 # atest-ext-store-git
 Git Store Extension of API Testing
+
+All issues of this project could be found at [linuxsuren/api-testing](https://github.com/LinuxSuRen/api-testing/issues).
