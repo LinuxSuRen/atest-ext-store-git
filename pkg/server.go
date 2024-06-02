@@ -288,6 +288,7 @@ func (s *gitClient) getClient(ctx context.Context) (opt *gitOptions, err error) 
 			cloneOptions: &git.CloneOptions{
 				URL:             store.URL,
 				Progress:        s.writer,
+				Depth:           1,
 				InsecureSkipTLS: insecure,
 				Auth:            auth,
 			},
@@ -298,6 +299,7 @@ func (s *gitClient) getClient(ctx context.Context) (opt *gitOptions, err error) 
 			},
 			fetchOptions: &git.FetchOptions{
 				Progress:        s.writer,
+				Depth:           1,
 				InsecureSkipTLS: insecure,
 				Auth:            auth,
 			},
