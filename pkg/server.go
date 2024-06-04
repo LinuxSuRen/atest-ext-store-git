@@ -19,14 +19,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/transport/client"
 	"io"
 	"log"
+	netHttp "net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"time"
 
-	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
@@ -279,6 +281,23 @@ func (s *gitClient) getClient(ctx context.Context) (opt *gitOptions, err error) 
 		}
 
 		insecure := store.Properties["insecure"] == "true"
+
+		var defaultTimeout = 60 * time.Second
+		var timeout = defaultTimeout
+
+		if timeoutStr, exists := store.Properties["timeout"]; exists {
+			parsedTimeout, err := time.ParseDuration(timeoutStr)
+			if err == nil {
+				timeout = parsedTimeout
+			} else {
+				log.Printf("Failed to parse timeout '%s': %v; using default timeout : '%d's", timeoutStr, err, defaultTimeout/time.Second)
+			}
+		}
+
+		customClient := &netHttp.Client{
+			Timeout: timeout,
+		}
+		client.InstallProtocol("https", http.NewClient(customClient))
 
 		opt = &gitOptions{
 			cache:      filepath.Join(os.TempDir(), store.Name),

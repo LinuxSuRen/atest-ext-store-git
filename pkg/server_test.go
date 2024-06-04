@@ -28,6 +28,16 @@ import (
 func TestGetClient(t *testing.T) {
 	ctx := remote.WithIncomingStoreContext(context.Background(), &atest.Store{})
 	defaultGitClient := &gitClient{}
+	timeoutCtx := remote.WithIncomingStoreContext(context.Background(), &atest.Store{
+		Name: "atest-store-git",
+		Kind: atest.StoreKind{
+			Name: "atest-store-git",
+		},
+		URL: "https://gitee.com/linuxsuren/api-testing-hub",
+		Properties: map[string]string{
+			"timeout": "0.1s",
+		},
+	})
 	t.Run("no context", func(t *testing.T) {
 		opt, err := defaultGitClient.getClient(context.TODO())
 		assert.Nil(t, opt)
@@ -45,6 +55,16 @@ func TestGetClient(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, opt)
 		assert.False(t, opt.cloneOptions.InsecureSkipTLS)
+	})
+
+	t.Run("timeout", func(t *testing.T) {
+		opt, err := defaultGitClient.getClient(timeoutCtx)
+		assert.NoError(t, err)
+		assert.NotNil(t, opt)
+		assert.False(t, opt.cloneOptions.InsecureSkipTLS)
+
+		_, err = defaultGitClient.loadCache(timeoutCtx)
+		assert.Error(t, err)
 	})
 
 	t.Run("verify", func(t *testing.T) {
