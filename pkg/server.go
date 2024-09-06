@@ -1,5 +1,5 @@
 /*
-Copyright 2023 API Testing Authors.
+Copyright 2023-2024 API Testing Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/transport/client"
 	"io"
 	"log"
 	netHttp "net/http"
@@ -28,6 +26,9 @@ import (
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/transport/client"
 
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -55,9 +56,14 @@ func (s *gitClient) loadCache(ctx context.Context) (opt *gitOptions, err error) 
 	}
 
 	remoteName := "origin"
-	branch := "master"
 	repoAddr := opt.cloneOptions.URL
 	configDir := opt.cache
+
+	if repoAddr == "" {
+		err = fmt.Errorf("the git repository address is empty")
+		return
+	}
+
 	log.Println("load cache from", repoAddr)
 
 	if ok, _ := util.PathExists(configDir); ok {
@@ -73,17 +79,17 @@ func (s *gitClient) loadCache(ctx context.Context) (opt *gitOptions, err error) 
 
 				if err = wd.PullContext(ctx, &git.PullOptions{
 					RemoteName:    remoteName,
-					ReferenceName: plumbing.NewBranchReferenceName(branch),
+					ReferenceName: plumbing.NewBranchReferenceName(opt.branch),
 					Force:         true,
 					Auth:          opt.cloneOptions.Auth,
 				}); err != nil && err != git.NoErrAlreadyUpToDate {
-					err = fmt.Errorf("failed to pull git repository '%s', error: %v", repo, err)
+					err = fmt.Errorf("failed to pull git repository '%s', error: %v", repoAddr, err)
 					return
 				}
 				err = nil
 			}
 		} else {
-			err = fmt.Errorf("failed to open git local repository, error: %v", err)
+			err = fmt.Errorf("failed to open git local repository '%s', error: %v", configDir, err)
 		}
 	} else {
 		if _, err = git.PlainCloneContext(ctx, configDir, false, opt.cloneOptions); err != nil {
@@ -304,6 +310,7 @@ func (s *gitClient) getClient(ctx context.Context) (opt *gitOptions, err error) 
 			targetPath: store.Properties["targetpath"],
 			name:       store.Properties["name"],
 			email:      store.Properties["email"],
+			branch:     store.Properties["branch"],
 			cloneOptions: &git.CloneOptions{
 				URL:             store.URL,
 				Progress:        s.writer,
@@ -324,11 +331,17 @@ func (s *gitClient) getClient(ctx context.Context) (opt *gitOptions, err error) 
 			},
 		}
 
+		if opt.targetPath == "" {
+			opt.targetPath = DefaultTargetPath
+		}
 		if opt.name == "" {
-			opt.name = "LinuxSuRen"
+			opt.name = DefaultGitName
 		}
 		if opt.email == "" {
-			opt.email = "LinuxSuRen@users.noreply.github.com"
+			opt.email = DefaultGitEmail
+		}
+		if opt.branch == "" {
+			opt.branch = DefaultBranchName
 		}
 	}
 	return
@@ -345,6 +358,7 @@ func (s *gitClient) newLoader(ctx context.Context) (loader testing.Writer, err e
 type gitOptions struct {
 	cache        string
 	targetPath   string
+	branch       string
 	name         string
 	email        string
 	cloneOptions *git.CloneOptions
