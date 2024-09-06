@@ -1,5 +1,5 @@
 /*
-Copyright 2023 API Testing Authors.
+Copyright 2023-2024 API Testing Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -65,6 +65,18 @@ func TestGetClient(t *testing.T) {
 
 		_, err = defaultGitClient.loadCache(timeoutCtx)
 		assert.Error(t, err)
+	})
+
+	t.Run("default value", func(t *testing.T) {
+		opt, err := defaultGitClient.getClient(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, DefaultBranchName, opt.branch)
+		assert.Equal(t, DefaultGitEmail, opt.email)
+		assert.Equal(t, DefaultGitName, opt.name)
+		assert.Equal(t, DefaultTargetPath, opt.targetPath)
+		assert.False(t, opt.cloneOptions.InsecureSkipTLS)
+		assert.False(t, opt.pushOptions.InsecureSkipTLS)
+		assert.False(t, opt.fetchOptions.InsecureSkipTLS)
 	})
 
 	t.Run("verify", func(t *testing.T) {
