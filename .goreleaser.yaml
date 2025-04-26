@@ -9,6 +9,7 @@ builds:
       - CGO_ENABLED=0
     id: atest-store-git
     binary: atest-store-git
+    main: ./main.go
     goos:
       - linux
       - windows
@@ -21,7 +22,7 @@ builds:
 archives:
   - name_template: "{{ .Binary }}-{{ .Os }}-{{ .Arch }}"
     builds:
-      - atest-store-git
+      - atest-ext-store-git
     format_overrides:
       - goos: windows
         format: zip
