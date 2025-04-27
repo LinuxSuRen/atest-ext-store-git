@@ -14,7 +14,7 @@ env:
 
 jobs:
   goreleaser:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3.6.0
@@ -38,7 +38,7 @@ jobs:
         if: github.ref != 'refs/heads/master'
         with:
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_SECRETS }}
       - name: Upload via oras
@@ -50,7 +50,7 @@ jobs:
           oras push ${{ env.REGISTRY }}/linuxsuren/atest-ext-store-git:${TAG#v} */*
 
   image:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.0
@@ -81,7 +81,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   image-dockerhub:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.0

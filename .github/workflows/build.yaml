@@ -5,7 +5,7 @@ on:
 
 jobs:
   Test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -17,7 +17,7 @@ jobs:
           make test
 
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -32,7 +32,7 @@ jobs:
           args: release --skip-publish --rm-dist --snapshot
 
   BuildImage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
