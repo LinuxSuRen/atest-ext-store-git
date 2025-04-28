@@ -5,7 +5,7 @@ on:
 
 jobs:
   Test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -17,7 +17,7 @@ jobs:
           make test
 
   Build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
