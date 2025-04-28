@@ -5,7 +5,7 @@ on:
 
 jobs:
   Test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -17,7 +17,7 @@ jobs:
           make test
 
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -28,11 +28,11 @@ jobs:
         uses: goreleaser/goreleaser-action@v4.1.1
         with:
           github_token: ${{ secrets.GH_PUBLISH_SECRETS }}
-          version: v1.14.0
-          args: release --skip-publish --rm-dist --snapshot
+          version: v2.8.0
+          args: release --clean --snapshot
 
   BuildImage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3

@@ -14,7 +14,7 @@ env:
 
 jobs:
   goreleaser:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3.6.0
@@ -34,11 +34,11 @@ jobs:
           docker login --username linuxsuren --password ${{secrets.DOCKER_HUB_PUBLISH_SECRETS}}
           docker login ${{ env.REGISTRY }}/linuxsuren --username linuxsuren --password ${{secrets.GH_PUBLISH_SECRETS}}
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2.9.1
+        uses: goreleaser/goreleaser-action@v4.1.1
         if: github.ref != 'refs/heads/master'
         with:
-          version: latest
-          args: release --rm-dist
+          version: v2.8.0
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_SECRETS }}
       - name: Upload via oras
@@ -50,7 +50,7 @@ jobs:
           oras push ${{ env.REGISTRY }}/linuxsuren/atest-ext-store-git:${TAG#v} */*
 
   image:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.0
@@ -81,7 +81,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   image-dockerhub:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.0
